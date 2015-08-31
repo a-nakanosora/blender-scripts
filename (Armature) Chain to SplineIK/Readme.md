@@ -66,6 +66,8 @@
     * **(Copy Transforms Constraint)** DeformArmature → ControlArmature
     
     のようになり、循環がなくなるため Cyclic Dependancy 警告を出さずに済むことになります。
+    
+    ( ちなみに DeformArmature に ControlArmature へのコンストレイント割り当てを自動で行うスクリプトを [blender-scripts/(Armature) Attach Deformer to Controller](https://github.com/a-nakanosora/blender-scripts/tree/master/(Armature)%20Attach%20Deformer%20to%20Controller) に用意してあります。)
 
 ===================
 <!--
