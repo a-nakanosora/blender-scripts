@@ -21,7 +21,7 @@
 
 #### フックArmatureの統合
 
-スプラインIKを設定したい Armature _(A)_ とはまた別の Armature _(B)_ を選択した状態で _(A)_ をShift+クリックで選択してからスクリプトを実行することで、生成したフックArmatureを事前に選択していた _(B)_ に統合することができます。
+スプラインIKを設定したい Armature _(A)_ とはまた別の Armature _(B)_ を選択してから _(A)_ を同時選択(Shift+クリックで選択)してスクリプトを実行することで、生成したフックArmatureを事前に選択していた _(B)_ に統合することができます。
 
 ![.](https://raw.githubusercontent.com/wiki/a-nakanosora/blender-scripts/images/(Armature) Chain to SplineIK/b1.png)
 ![.](https://raw.githubusercontent.com/wiki/a-nakanosora/blender-scripts/images/(Armature) Chain to SplineIK/b2.png)
