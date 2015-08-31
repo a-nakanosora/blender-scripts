@@ -55,7 +55,7 @@
 * スプラインIKを設定するボーンは一旦 Rest Position にしてからでないとうまく設定されない場合があります。
 * 複数のボーンが入り組んでくるとカーブのフックの初期位置を示す点線(Relationship Lines)が鬱陶しくなってきますが、その場合はカーブだけを別の非表示レイヤに移動させれば余計な線がなくなって見やすくなります。元々カーブを直接編集する必要はないので、最初から非表示にしておくのも手です。
     
-* 生成した各フックを元の(スプラインIKを設定した)Armatureのボーンの動きに追従したい時などで、フック用Armatureを元のArmatureの中のボーンに対してParentを設定すると、Cyclic Dependancy警告が出ます。これは 元のArmatureのボーン→(スプラインIK)カーブ→フック用ボーンArmature→元のArmatureのボーンという流れで依存が循環してしまうせいですが、このままだと微妙に不具合が出るため、間にまた別のコントロール用Armatureを挟むことで対処するといいと思います。
+* 生成した各フックを元の(スプラインIKを設定した)Armatureのボーンの動きに追従したい時などで、フック用Armatureを元のArmatureの中のボーンに対してParentを設定すると、Cyclic Dependency警告が出ます。これは 元のArmatureのボーン→(スプラインIK)カーブ→フック用ボーンArmature→元のArmatureのボーンという流れで依存が循環してしまうせいですが、このままだと微妙に不具合が出るため、間にまた別のコントロール用Armatureを挟むことで対処するといいと思います。
 
     ![.](https://raw.githubusercontent.com/wiki/a-nakanosora/blender-scripts/images/(Armature) Chain to SplineIK/c1_.gif)
     
@@ -65,7 +65,7 @@
     * **(Spline IK Constraint)** DeformArmature → Curve → SplineIK_Control_Hooks → ControlArmature
     * **(Copy Transforms Constraint)** DeformArmature → ControlArmature
     
-    のようになり、循環がなくなるため Cyclic Dependancy 警告を出さずに済むことになります。
+    のようになり、循環がなくなるため Cyclic Dependency 警告を出さずに済むことになります。
     
     ( ちなみに DeformArmature に ControlArmature へのコンストレイント割り当てを自動で行うスクリプトを [blender-scripts/(Armature) Attach Deformer to Controller](https://github.com/a-nakanosora/blender-scripts/tree/master/(Armature)%20Attach%20Deformer%20to%20Controller) に用意してあります。)
 
