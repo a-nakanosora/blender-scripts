@@ -1,10 +1,12 @@
+{'VERSION': (1,2,0)}
+
 import bpy
 
 C = bpy.context
 
 def main():
     curve = C.active_object
-    sels = [o for o in C.selected_objects if o.type=='MESH']
+    sels = [o for o in C.selected_objects if o.name != curve.name  and  o.type in {'MESH','CURVE'}]
     assert curve.type == 'CURVE'
     assert len(sels)>0
 
