@@ -1,4 +1,4 @@
-## GreasePencil
+## GreasePencil scripts
 
 
 > ##### Symmetrize Strokes.py
