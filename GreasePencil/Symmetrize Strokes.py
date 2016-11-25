@@ -16,7 +16,7 @@ from collections import namedtuple
 
 def main():
     GPStrokePointDetail = namedtuple('GPStrokePointDetail', 'co, pressure, strength')
-    GPStrokeDetail = namedtuple('GPStrokeDetail', 'points, colorname, mirroraxis')
+    GPStrokeDetail = namedtuple('GPStrokeDetail', 'points, colorname, line_width, mirroraxis')
 
     scene = bpy.context.scene
     gp = scene.grease_pencil
@@ -52,10 +52,10 @@ def main():
                 next_pts.append( GPStrokePointDetail(p.co.copy(), p.pressure, p.strength) )
             else:
                 if next_pts:
-                    next_strokes.append( GPStrokeDetail(next_pts, st.colorname, mirroraxis) )
+                    next_strokes.append( GPStrokeDetail(next_pts, st.colorname, st.line_width, mirroraxis) )
                     next_pts = []
         if next_pts:
-            next_strokes.append( GPStrokeDetail(next_pts, st.colorname, mirroraxis) )
+            next_strokes.append( GPStrokeDetail(next_pts, st.colorname, st.line_width, mirroraxis) )
 
 
     ## re-stroke
@@ -68,6 +68,7 @@ def main():
     for nst in next_strokes:
         st = fl.strokes.new(nst.colorname)
         st.draw_mode = '3DSPACE'
+        st.line_width = nst.line_width
         pts = st.points
         pts.add(len(nst.points))
         for i,np in enumerate(nst.points):
@@ -79,6 +80,7 @@ def main():
         ## add a mirrored stroke
         st = fl.strokes.new(nst.colorname)
         st.draw_mode = '3DSPACE'
+        st.line_width = nst.line_width
         pts = st.points
         pts.add(len(nst.points))
         m = nst.mirroraxis
