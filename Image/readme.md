@@ -9,3 +9,24 @@
 デフォルトでは`Render Result`スロットの画像が対象となっています。スクリプト中の対応する箇所(`bpy.data.images['<この部分>']`)を書き換えることで対象の画像スロットを変更できます。
 
 ![image](./docs/img/c.png)
+
+
+==================
+
+> ##### Petit Thinning.py
+
+画像にモルフォロジーフィルタをベースとした簡易的な細線化処理を行います。
+
+<img src="./docs/img/Petit Thinning - a.jpg" width="400px">
+
+スクリプトを実行すると画像スロット`A`にある画像に処理を施し、結果をスロット`B`に保存します。
+
+<img src="./docs/img/Petit Thinning - b.gif" width="700px">
+
+`class Pref` 中の `blurradius`, `emptythres`, `dilation_max_depth` がパラメータとなっており、これらの値を調節することでフィルタの利き具合を変化させることができます。
+
+* `blurradius` -- 1以上の整数
+* `emptrythres` -- 0.0～1.0の範囲。1.0に近づけるほど細線化の効果が強くなりますが、線は途切れがちになります。
+* `dilation_max_depth` -- 1以上の整数。大きい数値を指定することでより太い線の細線化に対応できますが、太すぎる線の場合ノイズが発生しがちになります。
+
+基本的に`blurradius`は`dilation_max_depth`より大きい値にするとノイズが低減します。
