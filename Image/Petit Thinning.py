@@ -4,7 +4,7 @@ Blender Script - Image Processing - Morphological Petit Thinning
 
 
 usage:
-    - Pref.blurradius, .emptythres, .dilation_max_depth を調節して当スクリプト実行
+    - Pref.emptyrange, .emptythres, .dilation_max_depth を調節して当スクリプト実行
     - 原画像'A'(==bpy.data.images['A']) に対し処理を施した結果を'B'に出力する.
     - 画像はノンアルファなグレースケール画像であること. RGBAの内R成分のみが使用される.
     - 画像は白地に黒線が描かれているものとする.
@@ -25,15 +25,15 @@ import time
 
 
 class Pref:
-    #blurradius, emptythres = 3, 0.9
-    #blurradius, emptythres = 5, 0.95
-    #blurradius, emptythres = 5, 0.99
-    blurradius, emptythres = 6, 0.95
-    #blurradius, emptythres = 7, 0.99
-    #blurradius, emptythres = 7, 0.98
-    #blurradius, emptythres = 7, 0.9
-    #blurradius, emptythres = 10, 0.95
-    #blurradius, emptythres = 20, 0.97
+    #emptyrange, emptythres = 3, 0.9
+    #emptyrange, emptythres = 5, 0.95
+    #emptyrange, emptythres = 5, 0.99
+    emptyrange, emptythres = 6, 0.95
+    #emptyrange, emptythres = 7, 0.99
+    #emptyrange, emptythres = 7, 0.98
+    #emptyrange, emptythres = 7, 0.9
+    #emptyrange, emptythres = 10, 0.95
+    #emptyrange, emptythres = 20, 0.97
 
     #dilation_max_depth = 1
     dilation_max_depth = 5
@@ -142,7 +142,7 @@ def exec_filters(W, H, ref_buffer):
 
 def get_blurred(ref_buffer):
     pimg = Image.fromarray(np.uint8(ref_buffer)) ## as GrayScale Image
-    pimg2 = pimg.filter(ImageFilter.GaussianBlur(radius=Pref.blurradius))
+    pimg2 = pimg.filter(ImageFilter.GaussianBlur(radius=Pref.emptyrange))
     out_buffer = np.asarray(pimg2)
     return out_buffer
 
