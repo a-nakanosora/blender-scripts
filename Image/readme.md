@@ -24,10 +24,18 @@
 
 <img src="./docs/img/Petit Thinning - b.gif" width="700px">
 
-`class Pref` 中の `blurradius`, `emptythres`, `dilation_max_depth` がパラメータとなっており、これらの値を調節することでフィルタの利き具合を変化させることができます。
+`class Pref` 中の `emptyrange`, `emptythres`, `dilation_max_depth` がパラメータとなっており、これらの値を調節することでフィルタの利き具合を変化させることができます。
 
-* `blurradius` -- 1以上の整数
+* `emptyrange` -- 1以上の整数
 * `emptrythres` -- 0.0～1.0の範囲。1.0に近づけるほど細線化の効果が強くなりますが、線は途切れがちになります。
 * `dilation_max_depth` -- 1以上の整数。大きい数値を指定することでより太い線の細線化に対応できますが、太すぎる線の場合ノイズが発生しがちになります。
 
-基本的に`blurradius`は`dilation_max_depth`より大きい値にするとノイズが低減します。
+基本的に`emptyrange`は`dilation_max_depth`より大きい値にするとノイズが低減します。
+
+==================
+
+> ##### Petit Thinning CLI/petit_thinning.py
+
+`Petit Thinning.py`のCLIバージョンです。BlenderでないPython上で使用できます。  
+使用にはPython環境上に**Numpy**, **Pillow(PIL)**を導入している必要があります。
+
