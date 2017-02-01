@@ -37,5 +37,5 @@
 > ##### Petit Thinning CLI/petit_thinning.py
 
 `Petit Thinning.py`のCLIバージョンです。BlenderでないPython上で使用できます。  
-使用にはPython環境上に**Numpy**, **Pillow(PIL)**を導入している必要があります。
+使用にはPython環境上に**Pillow(PIL)**を導入している必要があります。
 
