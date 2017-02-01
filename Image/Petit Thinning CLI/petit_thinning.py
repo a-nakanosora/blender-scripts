@@ -2,26 +2,21 @@
 Image Processing - Morphological Petit Thinning
     -- Morphology(Dilation)ベースの細線化処理を行う.
 
-
 usage:
     - commandline
         $ python petit_thinning.py <emptyrange> <emptythres> <dilation_max_depth> <path_in> [<path_out>] [-p]
       e.g.
         $ python petit_thinning.py 6 0.95 5 "d:/temp/a.png"
         $ python petit_thinning.py 3 0.9 10 "d:/temp/a.png" "d:/temp/b.png" -p
-
     - 画像はノンアルファなグレースケール画像であること. RGBAの内R成分のみが使用される.
     - 画像は白地に黒線が描かれているものとする.
 
-
 requires:
-    - Numpy
     - Pillow (PIL)
 '''
 
 
 
-import numpy as np
 from PIL import Image, ImageFilter
 
 import time
@@ -41,6 +36,7 @@ class Pref:
     #emptyrange, emptythres = 10, 0.95
     #emptyrange, emptythres = 20, 0.97
 
+    #dilation_max_depth = 10
     dilation_max_depth = 5
     #dilation_max_depth = 1
 
@@ -67,7 +63,7 @@ path_out : {}
 
     t0 = time.time()
 
-    pimg = Image.open(Pref.path_in)
+    pimg = Image.open(Pref.path_in).convert("L")
     pimg2 = process(pimg)
     pimg2.save(Pref.path_out)
 
@@ -89,7 +85,6 @@ usage:
 e.g.
   $ python petit_thinning.py 6 0.95 5 "d:/temp/a.png"
   $ python petit_thinning.py 3 0.9 10 "d:/temp/a.png" "d:/temp/b.png" -p
-
   <emptyrange> : int -- emptyrange >= 0
   <emptythres> : float -- 0.0 < emptythres < 1.0
   <dilation_max_depth> : int -- dilation_max_depth >= 1
@@ -116,80 +111,31 @@ e.g.
 
 
 def process(pimg):
-    a0 = np.asarray(pimg)
-    a0.flags.writeable = True
+    emptythres = Pref.emptythres
+    depth = Pref.dilation_max_depth
+    radius = Pref.emptyrange
 
-    W, H = len(a0[0]), len(a0)
-    a = a0[:, :, 0].copy() ## extract only R values
+    emptythres8 = round(emptythres*255)
+    img = pimg
 
-    a2 = exec_filters(W, H, a)
-
-    pimg2 = Image.fromarray(np.uint8(a2)) ## as GrayScale Image
-    return pimg2
-
-
-def exec_filters(W, H, ref_buffer):
-    '''
-    @arg ref_buffer : Pixels2d (NumpyArray(2D)) -- input image (GrayScale)
-    '''
-
-    buf = ref_buffer
     bufs = []
-    for i in range(Pref.dilation_max_depth):
-        buf2 = buf.copy()
-        bufs.append(buf2)
-        buf = np__dilation3x3(buf2)
+    buf = img.copy()
+    for i in range(depth):
+        bufs.append(buf.copy())
+        buf = buf.filter(ImageFilter.MaxFilter())
 
+    _gen = lambda x: ((x - emptythres8) / (255 - emptythres8)) * 255 if x >= emptythres8 else 0
+    convert_table = [_gen(i) for i in range(256)] * len(img.getbands())
 
-    maxv = 255
-    emptythres8 = round(Pref.emptythres*255)
     bufs.reverse()
-    buf3 = bufs[0].copy()
-    for b in bufs[1:]:
-        blurred_buf = get_blurred(buf3)
+    out_buf = bufs[0].copy()
+    for buf in bufs[1:]:
+        blurred_img = out_buf.filter(ImageFilter.GaussianBlur(radius=radius))
+        mask = blurred_img.point(convert_table)
+        out_buf.paste(buf, mask=mask)
 
-        blurred_buf_f = blurred_buf.flatten()
-        buf3_f = buf3.flatten()
-        b_f = b.flatten()
-        idx = (blurred_buf_f >= emptythres8)
-        tbuf = np.zeros(len(b_f))
-        tbuf[idx] = (blurred_buf_f[idx]-emptythres8)/(maxv-emptythres8)
-        buf3_f[idx] = np.maximum(0, np.minimum(255, tbuf[idx]*b_f[idx] + (1.0-tbuf[idx])*buf3_f[idx] ))
-        buf3 = buf3_f
-        buf3.resize(H,W)
+    return out_buf
 
-    return buf3
-
-
-def get_blurred(ref_buffer):
-    pimg = Image.fromarray(np.uint8(ref_buffer)) ## as GrayScale Image
-    pimg2 = pimg.filter(ImageFilter.GaussianBlur(radius=Pref.emptyrange))
-    out_buffer = np.asarray(pimg2)
-    return out_buffer
-
-
-def np__map_max3(a_):
-    v0 = 0
-    a = np.insert(np.append(a_, v0), 0, v0)
-    a2 = np.amax([a[1:],a[:-1]],axis=0)
-    a3 = np.amax([a2[1:],a2[:-1]],axis=0)
-    return a3
-
-
-def np__dilation3x3(pxs):
-    '''
-    Morphology :: Dilation filter (3x3)
-    @arg pxs : Pixels2d (NumpyArray(2D))
-    '''
-    a = []
-    for row in pxs:
-        a.append(np__map_max3(row))
-    b = np.array(a).transpose()
-    c = []
-    for row in b:
-        c.append(np__map_max3(row))
-    d = np.array(c).transpose()
-    return d
 
 
 main()

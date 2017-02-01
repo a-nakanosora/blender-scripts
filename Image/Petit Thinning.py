@@ -11,14 +11,13 @@ usage:
 
 
 requires:
-    - Numpy
     - Pillow (PIL)
 
 '''
 
 
 import bpy ## BPY
-import numpy as np
+#import numpy as np
 from PIL import Image, ImageFilter
 
 import time
@@ -50,7 +49,7 @@ def main():
 
     blimage_save('A', Pref.temppath_in) ## BPY
 
-    pimg = Image.open(Pref.temppath_in)
+    pimg = Image.open(Pref.temppath_in).convert("L")
     pimg2 = process(pimg)
     pimg2.save(Pref.temppath_out)
 
@@ -101,70 +100,30 @@ def blimage_load(imgname, path):
 
 
 def process(pimg):
-    a0 = np.asarray(pimg)
-    a0.flags.writeable = True
+    emptythres = Pref.emptythres
+    depth = Pref.dilation_max_depth
+    radius = Pref.emptyrange
 
-    W, H = len(a0[0]), len(a0)
-    a = a0[:, :, 0].copy()
+    emptythres8 = round(emptythres*255)
+    img = pimg
 
-    a2 = exec_filters(W, H, a)
-    pimg2 = Image.fromarray(np.uint8(a2))
-    return pimg2
-
-
-def exec_filters(W, H, ref_buffer):
-    buf = ref_buffer
     bufs = []
-    for i in range(Pref.dilation_max_depth):
-        buf2 = buf.copy()
-        bufs.append(buf2)
-        buf = np__dilation3x3(buf2)
+    buf = img.copy()
+    for i in range(depth):
+        bufs.append(buf.copy())
+        buf = buf.filter(ImageFilter.MaxFilter())
 
-    maxv = 255
-    emptythres8 = round(Pref.emptythres*255)
+    _gen = lambda x: ((x - emptythres8) / (255 - emptythres8)) * 255 if x >= emptythres8 else 0
+    convert_table = [_gen(i) for i in range(256)] * len(img.getbands())
+
     bufs.reverse()
-    buf3 = bufs[0].copy()
-    for b in bufs[1:]:
-        blurred_buf = get_blurred(buf3)
+    out_buf = bufs[0].copy()
+    for buf in bufs[1:]:
+        blurred_img = out_buf.filter(ImageFilter.GaussianBlur(radius=radius))
+        mask = blurred_img.point(convert_table)
+        out_buf.paste(buf, mask=mask)
 
-        blurred_buf_f = blurred_buf.flatten()
-        buf3_f = buf3.flatten()
-        b_f = b.flatten()
-        idx = (b_f != maxv) & (blurred_buf_f >= emptythres8)
-        tbuf = np.zeros(len(b_f))
-        tbuf[idx] = (blurred_buf_f[idx]-emptythres8)/(maxv-emptythres8)
-        buf3_f[idx] = tbuf[idx]*b_f[idx] + (1.0-tbuf[idx])*buf3_f[idx]
-        buf3 = buf3_f
-        buf3.resize(H,W)
-
-    return buf3
-
-
-def get_blurred(ref_buffer):
-    pimg = Image.fromarray(np.uint8(ref_buffer)) ## as GrayScale Image
-    pimg2 = pimg.filter(ImageFilter.GaussianBlur(radius=Pref.emptyrange))
-    out_buffer = np.asarray(pimg2)
-    return out_buffer
-
-
-def np__map_max3(a_):
-    v0 = 0
-    a = np.insert(np.append(a_, v0), 0, v0)
-    a2 = np.amax([a[1:],a[:-1]],axis=0)
-    a3 = np.amax([a2[1:],a2[:-1]],axis=0)
-    return a3
-
-
-def np__dilation3x3(pxs):
-    a = []
-    for row in pxs:
-        a.append(np__map_max3(row))
-    b = np.array(a).transpose()
-    c = []
-    for row in b:
-        c.append(np__map_max3(row))
-    d = np.array(c).transpose()
-    return d
+    return out_buf
 
 
 main()
