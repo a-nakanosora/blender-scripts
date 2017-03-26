@@ -31,6 +31,8 @@ class Option:
     #taper_profile = lambda t: 1.0
     #taper_profile = lambda t: 1.0-t
     taper_profile = lambda t: 1.0-t*t*(-2*t+3)
+    #taper_profile = lambda t: 1.0-t**3
+    #taper_profile = lambda t: 1.0-(t*t*(-2*t+3))**4
 
     #path_sample = 3
     #path_sample = 5
