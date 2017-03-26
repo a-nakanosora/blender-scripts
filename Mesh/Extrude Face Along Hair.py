@@ -9,7 +9,7 @@ usage:
     - Hair Dynamics を適用するには事前に Hair を Bake しておく必要がある.
 '''
 
-{'VERSION': (0,2)}
+{'VERSION': (0,4)}
 
 import bpy
 from mathutils import Vector
@@ -21,7 +21,12 @@ def main():
 
 class Option:
     ignore_face_duplication = True
+
     use_twist = True
+    use_twist_root_smooth = True
+    twist_root_smooth_factor = 4.0
+    use_twist_dir_stack = True
+
 
     #taper_profile = lambda t: 1.0
     #taper_profile = lambda t: 1.0-t
@@ -72,14 +77,20 @@ def run():
         f = mesh.polygons[ep.face_index]
         baseshape = [mesh.vertices[vidx].co - head for vidx in f.vertices]
         ext_seqs = []
+        nsum = Vector((0,0,0))
         for v in baseshape:
             extpath = []
             for i,p in enumerate(ep.path):
                 t = i/(len(ep.path)-1)
-                n = dirs[i-1].cross(dirs[i]).normalized()  if i>0 else  Vector((0,0,1))
+                n = dirs[i-1].cross(dirs[i])  if i>0 else  Vector()
+                if i>0:
+                    nsum += n
+                nn = (nsum if Option.use_twist_dir_stack else n).normalized()
                 theta = math.acos( clamp(-1.0, 1.0, dirs[0].dot(dirs[i])) )  \
                           if Option.use_twist else 0.0
-                q = p + rot_on(n, theta, v * Option.taper_profile(t))
+                if Option.use_twist_root_smooth and i <= Option.twist_root_smooth_factor:
+                    theta *= i/Option.twist_root_smooth_factor
+                q = p + rot_on(nn, theta, v * Option.taper_profile(t))
                 extpath.append(q)
             ext_seqs.append(extpath)
         make_mesh_from_pathsequence(seqobj, ext_seqs, closed=True)
