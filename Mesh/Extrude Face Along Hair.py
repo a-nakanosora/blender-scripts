@@ -9,18 +9,19 @@ usage:
     - Hair Dynamics を適用するには事前に Hair を Bake しておく必要がある.
 '''
 
-{'VERSION': (0,1)}
+{'VERSION': (0,2)}
 
 import bpy
 from mathutils import Vector
 from collections import namedtuple
-
+import math
 
 def main():
     run()
 
 class Option:
     ignore_face_duplication = True
+    use_twist = True
 
     #taper_profile = lambda t: 1.0
     #taper_profile = lambda t: 1.0-t
@@ -62,20 +63,38 @@ def run():
     bpy.ops.object.mode_set(mode='EDIT')
 
     for ep in extprofs:
+        head = ep.path[0]
+        ds = [b-a for a,b in pairs(ep.path)]
+        ds.append(ds[-1].copy())
+        dirs = [d.normalized() for d in ds]
+        assert len(ep.path) == len(dirs)
+
         f = mesh.polygons[ep.face_index]
-        vs = [mesh.vertices[vidx] for vidx in f.vertices]
+        baseshape = [mesh.vertices[vidx].co - head for vidx in f.vertices]
         ext_seqs = []
-        for v in vs:
-            head = ep.path[0]
+        for v in baseshape:
             extpath = []
             for i,p in enumerate(ep.path):
                 t = i/(len(ep.path)-1)
-                q = p + (v.co - head) * Option.taper_profile(t)
+                n = dirs[i-1].cross(dirs[i]).normalized()  if i>0 else  Vector((0,0,1))
+                theta = math.acos( clamp(-1.0, 1.0, dirs[0].dot(dirs[i])) )  \
+                          if Option.use_twist else 0.0
+                q = p + rot_on(n, theta, v * Option.taper_profile(t))
                 extpath.append(q)
             ext_seqs.append(extpath)
         make_mesh_from_pathsequence(seqobj, ext_seqs, closed=True)
 
     bpy.ops.object.mode_set(mode='OBJECT')
+
+def clamp(min, max, v):
+    return min if v<min else max if v>max else v
+
+def rot_on(n, theta, a):
+    ## e.g. rot_on(Vector((1,0,0)), math.pi/180*90, Vector((0,0,2)))
+    if theta==0.0:
+        return a.copy()
+    b = n*n.dot(a) + (a-n*n.dot(a))*math.cos(theta) - a.cross(n)*math.sin(theta)
+    return b
 
 def sample_hair_path(hair_keys, sample):
     return resample_points([h.co for h in hair_keys], sample)
