@@ -8,7 +8,7 @@
 2. Copy & Paste Script code
 3. Run Script (Alt+P key on Text Editor)
 
-=========
+---
 
 拙作のアドオン [External Script Executer](https://github.com/a-nakanosora/blender-addon-external-script-executer)
 を使用するとより楽に使うことができます。
