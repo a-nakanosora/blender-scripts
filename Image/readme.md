@@ -10,8 +10,20 @@
 
 ![image](./docs/img/c.png)
 
+---
 
-==================
+> ##### Clipboard Copy Image [Viewer Node] (Windows).py
+
+上のスクリプトの`Viewer Node`が対象のバージョン。
+
+---
+
+> ##### Clone Viewer Node Image.py
+
+イメージスロット`Viewer Node`の画像のコピーを行うためのスクリプト。
+`Viewer Node`の画像はBlender標準の方法だと正しくコピーできないので、それを回避するためのものとなっています。
+
+---
 
 > ##### Petit Thinning.py
 
@@ -32,7 +44,7 @@
 
 基本的に`emptyrange`は`dilation_max_depth`より大きい値にするとノイズが低減します。
 
-==================
+---
 
 > ##### Petit Thinning CLI/petit_thinning.py
 
