@@ -1,7 +1,7 @@
 ### Curve scripts
 
 
-===================
+---
 
 ##### Curve Point Divide / Curve Point Bevel (& refresh)
 
@@ -16,7 +16,7 @@
 
 ちなみに上の動画では [External Script Executer](https://github.com/a-nakanosora/blender-addon-external-script-executer) を通してショートカットキーから実行してます。
 
-===================
+---
 
 ##### Set Curve Deform
 
@@ -26,7 +26,7 @@
 
 またオブジェクトにはカーブへのCopy Locationコンストレイントも設定されます。
 
-===================
+---
 
 ##### Set Curve Dupli Frames
 
@@ -37,4 +37,3 @@
 メッシュオブジェクトにDupli Framesを利用してのカーブに沿った複製を設定します。
 
 
-<br>
